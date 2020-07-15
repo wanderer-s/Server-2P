@@ -12,7 +12,7 @@ assignees: ''
 **Assignee** : 
 
 #### Job Description
-> 기본적인 로그인 API구현
+> 
 
 #### Todo 
 >  해당 작업이 완성되기 위해서 완료되어야 하는 작업 리스트를 적어주세요 
