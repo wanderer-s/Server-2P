@@ -38,6 +38,6 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --fix"
+    "*.js": ["eslint --fix"]
   }
 }
