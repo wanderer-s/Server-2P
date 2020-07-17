@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const session = require('express-session');
 
-// const router = require('./routes');
+const userRouter = require('./routes/user');
 
 const morgan = require('morgan');
 
@@ -29,7 +29,7 @@ app.use(
 app.use(morgan('dev'));
 
 //라우터
-// app.use('/user', router);
+app.use('/user', userRouter);
 
 app.set('port', port);
 app.listen(app.get('port'), () => {
