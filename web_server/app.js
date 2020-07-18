@@ -29,7 +29,7 @@ app.use(
 app.use(morgan('dev'));
 
 //라우터
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 
 app.set('port', port);
 app.listen(app.get('port'), () => {
