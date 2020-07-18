@@ -7,6 +7,7 @@ const cors = require('cors');
 const session = require('express-session');
 
 const userRouter = require('./routes/users');
+const roomRouter = require('./routes/rooms');
 
 const morgan = require('morgan');
 
@@ -30,6 +31,7 @@ app.use(morgan('dev'));
 
 //라우터
 app.use('/users', userRouter);
+app.use('/rooms', roomRouter);
 
 app.set('port', port);
 app.listen(app.get('port'), () => {
