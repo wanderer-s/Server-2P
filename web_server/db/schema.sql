@@ -1,21 +1,21 @@
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `userId` varchar(40) UNIQUE,
-  `nickName` varchar(15) UNIQUE,
-  `socialId` varchar(20),
+  `userId` varchar(40) not null UNIQUE,
+  `nickName` varchar(15) not null UNIQUE,
+  `socialId` varchar(20) UNIQUE,
   `avatarId` int,
-  `password` varchar(30)
+  `password` varchar(150)
 );
 
 CREATE TABLE `gameList` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
-  `gameName` varchar(20)
+  `code` int PRIMARY KEY AUTO_INCREMENT,
+  `gameName` varchar(20) not null
 );
 
 CREATE TABLE `users_game` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `gameId` int NOT Null,
-  foreign key(`gameId`) references `gameList`(`id`)
+  `gameCode` int NOT Null,
+  foreign key(`gameCode`) references `gameList`(`code`)
   on delete cascade,
   `userId` int NOT Null,
   foreign key(`userId`) references `users`(`id`)
@@ -26,7 +26,7 @@ CREATE TABLE `playerScore` (
   `scoreId` int not null,
   foreign key(`scoreId`) references `users_game`(`id`)
   on delete cascade,
-  `gamesPlayed` int,
-  `gamesWon` int,
-  `gamesTied` int
+  `gamesPlayed` int not null,
+  `gamesWon` int not null,
+  `gamesTied` int not null
 );
