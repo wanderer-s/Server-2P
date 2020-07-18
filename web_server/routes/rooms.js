@@ -3,6 +3,6 @@ const router = express.Router();
 
 const { roomController } = require('../controllers');
 
-router.post('/makeroom', roomController.makeroom.post);
+router.post('/makeroom', roomController.post);
 
 module.exports = router;
