@@ -12,11 +12,13 @@ const development = mysql.createConnection({
 })
 development.connect()
 
-/* exports.production = mysql.createConnection({
+/* const production = mysql.createConnection({
 	host: process.env.DATABASE_PRODUCTION_HOST,
 	user: process.env.DATABASE_PRODUCTION_USER,
 	password: process.env.DATABASE_PRODUCTION_PASSWORD,
 	database: '2p4p'
-}) */
+})
+poduction.connect()
+ */
 
 module.exports = development
