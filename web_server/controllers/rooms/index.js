@@ -50,5 +50,26 @@ module.exports = {
 				res.status(501).json({ 'error': JSON.stringify(err) });
 			}
 		}
+	},
+	joinroom: {
+		post: function(req, res){
+			try{
+				let roomId = req.query.roomId;
+				// console.log(gameCode);
+				let gameCode = req.body.gameCode;
+				let password = req.body.password;
+				
+				if(gameCode === 1){
+					if(moleRooms[roomId].password === password){
+						res.status(200).json({'message': '방 입장에 성공했습니다'});
+					}else{
+						res.status(409).json({'error': '비밀번호가 틀렸습니다'});
+					}
+				}
+			} catch (err) {
+				console.log(err);
+				res.status(501).json({ 'error': JSON.stringify(err) });
+			}
+		}
 	}
 };
