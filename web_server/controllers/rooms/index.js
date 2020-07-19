@@ -35,5 +35,20 @@ module.exports = {
 				res.status(501).json({ 'error': JSON.stringify(err) });
 			}
 		}
+	},
+	roomlist: {
+		get: function(req, res) {
+			try{
+				let gameCode = req.query.gameCode;
+				// console.log(gameCode);
+
+				if(gameCode === '1'){
+					res.status(200).json(moleRooms);
+				}
+			} catch (err) {
+				console.log(err);
+				res.status(501).json({ 'error': JSON.stringify(err) });
+			}
+		}
 	}
 };
