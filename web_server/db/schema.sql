@@ -1,7 +1,7 @@
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `userId` varchar(40) not null UNIQUE,
-  `nickName` varchar(15) not null UNIQUE,
+  `nickname` varchar(15) not null UNIQUE,
   `socialId` varchar(20) UNIQUE,
   `avatarId` int,
   `password` varchar(150)
