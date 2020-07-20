@@ -12,7 +12,9 @@ module.exports = {
 			res.status(200).json({ 'message': '회원가입 성공했습니다.' });
 		} catch (err) {
 			console.error(err);
-			res.status(409).json({ 'error': JSON.stringify(err) });
+			if(err.message === 'userId') res.status(409).json({ 'error': '이미 존재하는 아이디입니다.'  });
+			else if(err.message === 'nickname') res.status(409).json({ 'error': '이미 존재하는 닉네임입니다.'  });
+			else res.status(501).json(err);
 		}
 	}
 };
