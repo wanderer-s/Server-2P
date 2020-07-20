@@ -46,10 +46,11 @@ module.exports = {
 	signin: {
 		post: async function(data) {
 			let {userId, password, socialId, nickname} = await data;
-			let shasum = crypto.pbkdf2(password, '2p4P"sfinal_Project!', 942148, 'sha512').toSting('hex');
-			password = shasum;
-
-			if(!data.socialId) {
+			// let shasum = crypto.pbkdf2Sync(password, '2p4P"sfinal_Project!', 942148, 64, 'sha512').toSting('hex');
+			// password = shasum;
+			let key = crypto.pbkdf2Sync(password, '2p4P"sfinal_Project!', 942148, 64, 'sha512').toString('hex');
+			password = key;
+			if(!data.socialId) {	//소셜 로그인 아닌 경우
 				return new Promise((resolve, reject) => {
 					let sql = `
 							select
@@ -59,6 +60,8 @@ module.exports = {
 							from users
 							where userId = ? and password = ?`;
 					db.query(sql, [userId, password], (error, result) => {
+						if(!result.length) reject(new Error('loginErr'));
+						console.log(result);
 						error ? reject(error) : resolve(result);
 					});
 				});
