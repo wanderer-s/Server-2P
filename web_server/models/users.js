@@ -4,20 +4,41 @@ const crypto = require('crypto');
 module.exports = {
 	signup : {
 		post: async function(data) {
-			let {userId, password, nickName, socialId} = await data;
+			let {userId, password, nickname} = await data;
 			//password 암호화
-			let shasum = crypto.pbkdf2(password, '2p4P"sfinal_Project!', 942148, 'sha512').toSting('hex');
-			password = shasum;
-			
-			//socialId가 없을때(자체 회원가입)
-			if(!socialId) socialId = null;
+			let key = crypto.pbkdf2Sync(password, '2p4P"sfinal_Project!', 942148, 64, 'sha512').toString('hex');
+			password = key;
 	
 			return new Promise((resolve, reject) => {
 				let sql = `
-					insert into users (userId, nickName, sociallid, password)
-					values (?, ?, ?, ?)`;
-				db.query(sql, [userId, nickName, socialId, password], (error, result) => {
-					error? reject(error) : resolve(result);
+						select not exists(
+							select userId
+							from users
+							where userId = ?
+						) as result`;
+				db.query(sql, userId, (error, result) => {
+					if(result[0].result !== 1) {
+						return reject(new Error('userId'));
+					} else {
+						let sql = `
+						select not exists(
+							select nickname
+							from users
+							where nickname = ?
+						) as result`;
+						db.query(sql, nickname, (error, result) => {
+							if(result[0]['result'] !== 1) {
+								return reject(new Error('nickname'));
+							} else {
+								let sql = `
+										insert into users (userId, nickname, password)
+										values (?, ?, ?)`;
+								db.query(sql, [userId, nickname, password], (error, result) => {
+									error? reject(error) : resolve(result);
+								});
+							}
+						});
+					}	
 				});
 			});
 		}
