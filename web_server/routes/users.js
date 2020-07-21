@@ -3,16 +3,18 @@ const router = express.Router();
 
 const { userController } = require('../controllers');
 
-// * POST /user/signin
+// * POST /users/signin
 router.post('/signin', userController.signin.post);
 
-// // * POST /user/signout
+// // * POST /users/signout
 // router.post('/signout', userController.signout.post);
 
-// * POST /user/signup
+// * POST /users/signup
 router.post('/signup', userController.signup.post);
 
-// // * GET /user/info
-// router.get('/info', userController.info.get);
+// * GET /users/mypage
+router.get('/mypage', userController.mypage.get);
 
+// * PUT /users/mypage
+router.put('/mypage', userController.mypage.put);
 module.exports = router;
