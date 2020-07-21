@@ -21,12 +21,12 @@ module.exports = {
 					roomName: req.body.roomName,
 					roomOwner: req.body.roomOwner
 				};
-				
-				if(params.gameCode === 1){	//두더지 게임
+
+				if (params.gameCode === 1) {	//두더지 게임
 					//Owner확인, 이미 생성된 방중 Owner가 겹치면 기존에 있던 방 삭제..?
 					moleRooms[params.roomId] = params;
 				}
-	
+
 				res.status(200).json({ 'message': '방을 성공적으로 생성했습니다.' });
 				// console.log(moleRooms);
 				//redirection?
@@ -37,13 +37,23 @@ module.exports = {
 		}
 	},
 	roomlist: {
-		get: function(req, res) {
-			try{
+		get: function (req, res) {
+			try {
 				let gameCode = req.query.gameCode;
 				// console.log(gameCode);
 
-				if(gameCode === '1'){
-					res.status(200).json(moleRooms);
+				if (gameCode === '1') {
+					let roomArr = [];
+					Object.keys(moleRooms).map(key => {
+						let value = {};
+						value.roomId = moleRooms[key].roomId;
+						value.gameCode = moleRooms[key].gameCode;
+						value.roomName = moleRooms[key].roomName;
+						value.roomOwner = moleRooms[key].roomOwner;
+						roomArr.push(value);
+					});
+
+					res.status(200).json(roomArr);
 				}
 			} catch (err) {
 				console.log(err);
