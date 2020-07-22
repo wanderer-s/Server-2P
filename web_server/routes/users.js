@@ -6,8 +6,8 @@ const { userController } = require('../controllers');
 // * POST /users/signin
 router.post('/signin', userController.signin.post);
 
-// // * POST /users/signout
-// router.post('/signout', userController.signout.post);
+// * POST /users/signout
+router.post('/signout', userController.signout.post);
 
 // * POST /users/signup
 router.post('/signup', userController.signup.post);
@@ -17,4 +17,5 @@ router.get('/mypage', userController.mypage.get);
 
 // * PUT /users/mypage
 router.put('/mypage', userController.mypage.put);
+
 module.exports = router;
