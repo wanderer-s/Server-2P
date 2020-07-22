@@ -27,7 +27,7 @@ module.exports = {
 							where nickname = ?
 						) as result`;
 						db.query(sql, nickname, (error, result) => {
-							if(result[0]['result'] !== 1) {
+							if(result[0].result !== 1) {
 								return reject(new Error('nickname'));
 							} else {
 								let sql = `
