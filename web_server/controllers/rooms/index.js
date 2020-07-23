@@ -7,7 +7,8 @@ let moleRooms = {};
 	"gameCode":
 	"password": 
 	"roomName": 
-	"roomOwner": 
+  "roomOwner": 
+  "userNum":
 }
 */
 module.exports = {
@@ -15,15 +16,15 @@ module.exports = {
 		post: async function (req, res) {
 			try {
 				let params = {
-					roomId: momnet().format('YYYYMMDDHHMMSS') + req.body.roomName,
+					roomId: momnet().format('YYYYMMDDHHMMSS') + '-' +  req.body.roomName,
 					gameCode: req.body.gameCode,
 					password: req.body.password,
 					roomName: req.body.roomName,
-					roomOwner: req.body.roomOwner
+					roomOwner: req.session.username,  
+					userNum: 1
 				};
 				
 				if(params.gameCode === 1){	//두더지 게임
-					//Owner확인, 이미 생성된 방중 Owner가 겹치면 기존에 있던 방 삭제..?
 					moleRooms[params.roomId] = params;
 				}
 	
@@ -43,7 +44,21 @@ module.exports = {
 				// console.log(gameCode);
 
 				if(gameCode === '1'){
-					res.status(200).json(moleRooms);
+					let rooms = [];
+
+					Object.keys(moleRooms).forEach(k => {
+						let room = {};
+						room.roomId = moleRooms[k].roomId;
+						room.gameCode = moleRooms[k].gameCode;
+						room.roomName = moleRooms[k].roomName;
+						room.roomOwner = moleRooms[k].roomOwner;
+						room.userNum = moleRooms[k].userNum;
+						room.isLock = Boolean(moleRooms[k].password);
+						rooms.push(room);
+					});
+
+					// res.status(200).json(moleRooms);  //변경 필요
+					res.status(200).json(rooms);  
 				}
 			} catch (err) {
 				console.log(err);
@@ -61,6 +76,7 @@ module.exports = {
 				
 				if(gameCode === 1){
 					if(moleRooms[roomId].password === password){
+						moleRooms[roomId].userNum += 1;
 						res.status(200).json({'message': '방 입장에 성공했습니다'});
 					}else{
 						res.status(409).json({'error': '비밀번호가 틀렸습니다'});
@@ -71,5 +87,27 @@ module.exports = {
 				res.status(501).json({ 'error': JSON.stringify(err) });
 			}
 		}
-	}
+	},
+	leaveroom: {
+		post: function(req, res){
+			try{
+				let roomId = req.body.roomId;
+				let nickname = req.body.username;
+				let gameCode = req.body.gameCode;
+				
+				if(gameCode === 1){
+					if(moleRooms[roomId].roomOwner === nickname){
+						delete moleRooms[roomId];
+						res.status(200).json({'message': '방장이 방을 끝냈습니다'});
+					} else {
+						moleRooms[roomId].userNum -=1;
+						res.status(200).json({'message': '한 명이 방을 나갔습니다'});
+					}
+				}
+			} catch (err) {
+				console.log(err);
+				res.status(501).json({ 'error': JSON.stringify(err) });
+			}
+		}
+	},
 };
