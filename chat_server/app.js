@@ -51,7 +51,25 @@ io.on('connection', (socket) => {
   // 준비 버튼
   socket.on('ready', () => {
     //isReady 상태 변경
+    const user = getCurrentUser(socket.id);
+    user.userInfo.isReady = !user.userInfo.isReady; //반전
 
+    //현재 준비상태 전송
+    socket.broadcast
+      .to(user.room.roomId)
+      .emit('readyState',
+        {
+          userId: user.userInfo.userId,
+          username: user.userInfo.username,
+          isReady: user.userInfo.isReady
+        });
+    const roomUsers = getRoomUsers(user.room.roomId);
+    //전부 준비한 상황
+    if (roomUsers[0].userInfo.isReady && roomUsers[1].userInfo.isReady) { 
+      socket.broadcast
+        .to(user.room.roomId)
+        .emit('message', { username: 'System', text: 'gameStart!' });
+    }
   });
   // 방 나가기
   socket.on('disconnect', () => {
@@ -61,7 +79,7 @@ io.on('connection', (socket) => {
         'message',
         formatMessage(botName, `${user.userInfo.username} has left the chat`)
       );
-      
+
       // Send users and room info
       io.to(user.room.roomId).emit('roomUsers', {
         room: user.room.roomId,
