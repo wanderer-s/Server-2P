@@ -1,0 +1,37 @@
+const users = [];
+
+// Join user to chat
+function userJoin(id, userInfo, room) {
+  const user = { id, userInfo, room };
+  user.userInfo.isReady = 0;
+
+  users.push(user);
+
+  return user;
+}
+
+// Get current user
+function getCurrentUser(id) {
+  return users.find(user => user.userInfo.id === id);
+}
+
+// User leaves chat
+function userLeave(id) {
+  const index = users.findIndex(user => user.userInfo.id === id);
+  //방장이 나간경우 방폭
+  if (index !== -1) {
+    return users.splice(index, 1)[0];
+  }
+}
+
+// Get room users
+function getRoomUsers(roomId) {
+  return users.filter(user => user.room.roomId === roomId);
+}
+
+module.exports = {
+  userJoin,
+  getCurrentUser,
+  userLeave,
+  getRoomUsers
+};
