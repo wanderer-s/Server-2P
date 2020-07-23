@@ -15,6 +15,7 @@ const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/u
     isReady:
   },
   room: {
+    gameCode:
     roomId:
     roomName:
     roomOwner:
@@ -35,13 +36,6 @@ io.on('connection', (socket) => {
       room: user.room.roomId,
       users: getRoomUsers(user.room.roomId)
     });
-    /**추가해야되는 사항
-     * 방 입장시 방의 인원수 증가
-     *    방 인원수는 방에 대한 정보를 저장하고 있는 controlles/rooms/index 안에 접근 필요
-     *    해당 메소드에 접근이 가능한지 확인 필요
-     *      서버를 분리하는 경우 서버끼리 통신이 가능한지 확인
-     *      서버를 분리하지 않는 경우에만 메소드 활용
-     * */
   });
   // 채팅
   socket.on('message', (msg) => {

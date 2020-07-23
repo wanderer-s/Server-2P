@@ -6,7 +6,6 @@ function userJoin(id, userInfo, room) {
   user.userInfo.isReady = 0;
 
   users.push(user);
-
   return user;
 }
 
@@ -18,7 +17,23 @@ function getCurrentUser(id) {
 // User leaves chat
 function userLeave(id) {
   const index = users.findIndex(user => user.userInfo.id === id);
+
+  const user = getCurrentUser(id);
   //방장이 나간경우 방폭
+  fetch('http://localhost:3001/rooms/leaveroom', {
+    method: 'POST',
+    body: JSON.parse({
+      roomId: user.room.roomId,
+      username: user.userInfo.username,
+      gameCode: user.room.gameCode
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then()
+    .catch(err => console.log(err));
+
   if (index !== -1) {
     return users.splice(index, 1)[0];
   }
