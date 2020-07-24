@@ -69,13 +69,13 @@ module.exports = {
 	joinroom: {
 		post: function(req, res){
 			try{
-				let roomId = req.query.roomId;
+				let roomId = req.body.roomId;
 				// console.log(gameCode);
 				let gameCode = req.body.gameCode;
 				let password = req.body.password;
 				
 				if(gameCode === 1){
-					if(moleRooms[roomId].password === password){
+					if(moleRooms[roomId].password === password || !moleRooms[roomId]){
 						moleRooms[roomId].userNum += 1;
 						res.status(200).json({'message': '방 입장에 성공했습니다'});
 					}else{
