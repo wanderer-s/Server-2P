@@ -27,7 +27,7 @@ module.exports = {
 				if(params.gameCode === 1){	//두더지 게임
 					moleRooms[params.roomId] = params;
 				}
-	
+
 				res.status(200).json({ 'message': '방을 성공적으로 생성했습니다.' });
 				// console.log(moleRooms);
 				//redirection?
@@ -38,8 +38,8 @@ module.exports = {
 		}
 	},
 	roomlist: {
-		get: function(req, res) {
-			try{
+		get: function (req, res) {
+			try {
 				let gameCode = req.query.gameCode;
 				// console.log(gameCode);
 
