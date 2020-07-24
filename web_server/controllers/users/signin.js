@@ -16,6 +16,7 @@ module.exports = {
 
 			//session
 			sess.userId = data[0].id;
+			sess.username = data[0].nickname;
 			// console.log(sess);
 			res.status(200).json({ 'message': '로그인 성공하였습니다.' });
 		} catch (err) {
