@@ -11,12 +11,12 @@ function userJoin(id, userInfo, room) {
 
 // Get current user
 function getCurrentUser(id) {
-  return users.find(user => user.userInfo.id === id);
+  return users.find(user => user.id === id);
 }
 
 // User leaves chat
 function userLeave(id) {
-  const index = users.findIndex(user => user.userInfo.id === id);
+  const index = users.findIndex(user => user.id === id);
 
   const user = getCurrentUser(id);
   //방장이 나간경우 방폭
