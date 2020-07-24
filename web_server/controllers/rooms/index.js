@@ -7,8 +7,8 @@ let moleRooms = {};
 	"gameCode":
 	"password": 
 	"roomName": 
-  "roomOwner": 
-  "userNum":
+	"roomOwner": 
+	"userNum":
 }
 */
 module.exports = {
@@ -96,13 +96,18 @@ module.exports = {
 				let gameCode = req.body.gameCode;
 				
 				if(gameCode === 1){
+					// console.log(moleRooms[roomId]);
+					// console.log(nickname)
 					if(moleRooms[roomId].roomOwner === nickname){
 						delete moleRooms[roomId];
 						res.status(200).json({'message': '방장이 방을 끝냈습니다'});
 					} else {
 						moleRooms[roomId].userNum -=1;
+						if(moleRooms[roomId].userNum <=0) delete moleRooms[roomId];
 						res.status(200).json({'message': '한 명이 방을 나갔습니다'});
 					}
+				} else {
+					throw new Error('server Err');
 				}
 			} catch (err) {
 				console.log(err);
