@@ -18,11 +18,11 @@ module.exports = {
 			sess.userId = data[0].id;
 			sess.username = data[0].nickname;
 			// console.log(sess);
-			res.status(200).json({ 'message': '로그인 성공하였습니다.' });
+			res.status(200).json({ message: '로그인 성공하였습니다.' });
 		} catch (err) {
 			console.error(err);
-			if(err.message === 'loginErr') res.status(403).json({'error' : '로그인 실패하였습니다.'});
+			if (err.message === 'loginErr') res.status(403).json({ error: '로그인 실패하였습니다.' });
 			else res.status(501).json(err);
 		}
-	}
+	},
 };
