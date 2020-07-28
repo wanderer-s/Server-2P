@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
 /* eslint-disable indent */
 const { createServer } = require('http');
 const app = require('express')();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
 
-const { gameJoin, getCurrentScores } = require('./utils/users');
+const { gameJoin, getCurrentScores } = require('./utils/games');
 
 const PORT = 3009;
 

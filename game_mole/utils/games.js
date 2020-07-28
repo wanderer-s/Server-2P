@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable indent */
+/*eslint-disable*/
 const games = [];
 
 // Join game
@@ -37,6 +36,13 @@ function leaveGame(gameRoomId) {
     1
   );
 }
+
+module.exports = {
+  gameJoin,
+  getCurrentGame,
+  getCurrentScores,
+  leaveGame,
+};
 
 module.exports = {
   gameJoin,
