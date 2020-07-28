@@ -3,7 +3,7 @@ const app = require('express')();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
 
-const {gameJoin, getCurrentScores} = require('./utils/games');
+const {gameJoin, getCurrentScores, getCurrentGame} = require('./utils/games');
 
 const PORT = 3009;
 
@@ -15,6 +15,7 @@ io.on('connect', (socket) => {
 			const moleTimer = setInterval( () => {
 				let randomIndex = Math.floor(Math.random() * 16);
 				io.to(gameRoomId).emit('generateMole', randomIndex);
+				getCurrentGame(gameRoomId).currentMole += 1;
 			}, 3000);
 			setTimeout(() => {
 				clearInterval(moleTimer);
@@ -28,6 +29,17 @@ io.on('connect', (socket) => {
 						: 'tie';
 				socket.emit('gameover', winner);
 			},93000);
+		}
+	});
+	socket.on('moleClick', data => {
+		let {username, index, currentMole, gameRoomId} = data;
+		let currentGame = getCurrentGame(gameRoomId);
+		if(currentGame.currentMole === currentMole) {
+			currentGame.score[username] += 10;
+			const result = {};
+			result[username] = currentGame.score;
+			result.index = index;
+			io.to(gameRoomId).emit('updateScore', result);
 		}
 	});
 });
