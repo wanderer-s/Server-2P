@@ -20,11 +20,11 @@
     "nodemon": "^2.0.4"
   },
   "husky": {
-    "hook" : {
+    "hooks" : {
       "pre-commit" : "lint-staged"
     }
   },
   "lint-staged" : {
-    "*.js" : ["eslint--fix","git add"]
+    "*.js" : ["eslint --fix","git add"]
   }
 }
