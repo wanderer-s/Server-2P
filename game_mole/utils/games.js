@@ -1,3 +1,4 @@
+/*eslint-disable*/
 
 const games = [];
 
@@ -37,7 +38,7 @@ function leaveGame(gameRoomId) {
 }
 
 
-exports.module = {
+module.exports = {
 	gameJoin,
 	getCurrentGame,
 	getCurrentScores,
