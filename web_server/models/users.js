@@ -48,9 +48,9 @@ module.exports = {
 			let {userId, password, socialId, nickname} = await data;
 			// let shasum = crypto.pbkdf2Sync(password, '2p4P"sfinal_Project!', 942148, 64, 'sha512').toSting('hex');
 			// password = shasum;
-			let key = crypto.pbkdf2Sync(password, '2p4P"sfinal_Project!', 942148, 64, 'sha512').toString('hex');
-			password = key;
 			if(!data.socialId) {	//소셜 로그인 아닌 경우
+				let key = crypto.pbkdf2Sync(password, '2p4P"sfinal_Project!', 942148, 64, 'sha512').toString('hex');
+				password = key;
 				return new Promise((resolve, reject) => {
 					let sql = `
 							select
