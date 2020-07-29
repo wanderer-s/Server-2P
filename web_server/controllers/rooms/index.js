@@ -1,6 +1,8 @@
 const momnet = require('moment');
 
 let moleRooms = {};
+let pongRooms = {};
+let cardRooms = {};
 /*
 {
 	"roomId":,
@@ -24,8 +26,12 @@ module.exports = {
 					userNum: 1
 				};
 				
-				if(params.gameCode === 1){	//두더지 게임
+				if (params.gameCode === '0') {	//두더지 게임
 					moleRooms[params.roomId] = params;
+				} else if (params.gameCode === '1') {   //핑퐁게임
+					pongRooms[params.roomId] = params;
+				} else if (params.gameCode === '2') {   //추가게임
+					cardRooms[params.roomId] =params;
 				}
 
 				res.status(200).json({ 'message': '방을 성공적으로 생성했습니다.' });
@@ -39,27 +45,34 @@ module.exports = {
 	},
 	roomlist: {
 		get: function (req, res) {
+			console.log('roomList', moleRooms);
 			try {
-				let gameCode = req.query.gameCode;
-				// console.log(gameCode);
+				let gameCode = req.cookies.selectedGame;
+				let getRooms;
+				let rooms = [];
 
-				if(gameCode === '1'){
-					let rooms = [];
-
-					Object.keys(moleRooms).forEach(k => {
-						let room = {};
-						room.roomId = moleRooms[k].roomId;
-						room.gameCode = moleRooms[k].gameCode;
-						room.roomName = moleRooms[k].roomName;
-						room.roomOwner = moleRooms[k].roomOwner;
-						room.userNum = moleRooms[k].userNum;
-						room.isLock = Boolean(moleRooms[k].password);
-						rooms.push(room);
-					});
-
-					// res.status(200).json(moleRooms);  //변경 필요
-					res.status(200).json(rooms);  
+				if(gameCode === '0'){
+					getRooms = moleRooms;
+				} else if(gameCode === '1'){
+					getRooms = pongRooms;
+				} else if(gameCode === '2'){
+					getRooms = cardRooms;
 				}
+
+				Object.keys(getRooms).forEach(k => {
+					let room = {};
+					room.roomId = getRooms[k].roomId;
+					room.gameCode = getRooms[k].gameCode;
+					room.roomName = getRooms[k].roomName;
+					room.roomOwner = getRooms[k].roomOwner;
+					room.userNum = getRooms[k].userNum;
+					room.isLock = Boolean(getRooms[k].password);
+					rooms.push(room);
+				});
+				console.log(rooms);
+				// res.status(200).json(moleRooms);  //변경 필요
+				res.status(200).json(rooms);  
+          
 			} catch (err) {
 				console.log(err);
 				res.status(501).json({ 'error': JSON.stringify(err) });
@@ -74,7 +87,7 @@ module.exports = {
 				let gameCode = req.body.gameCode;
 				let password = req.body.password;
 				
-				if(gameCode === 1){
+				if(gameCode === 0){
 					if(moleRooms[roomId].password === password || !moleRooms[roomId]){
 						moleRooms[roomId].userNum += 1;
 						res.status(200).json({'message': '방 입장에 성공했습니다'});
@@ -95,7 +108,7 @@ module.exports = {
 				let nickname = req.body.username;
 				let gameCode = req.body.gameCode;
 				
-				if(gameCode === 1){
+				if(gameCode === 0){
 					// console.log(moleRooms[roomId]);
 					// console.log(nickname)
 					if(moleRooms[roomId].roomOwner === nickname){
