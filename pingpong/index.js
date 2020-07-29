@@ -54,7 +54,10 @@ io.on('connection', (socket) => {
   });
 
   //점수 난 경우
-
+  socket.on('start', (x) => {
+    socket.emit('start', x);
+    socket.broadcast.emit('start',!x);
+  })
   // 방 나가기
   socket.on('disconnect', () => {
 
