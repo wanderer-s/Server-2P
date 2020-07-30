@@ -5,7 +5,7 @@ const app = require('express')();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
 
-const { gameJoin, getCurrentScores, getCurrentGame } = require('./utils/games');
+const { gameJoin, getCurrentScores, getCurrentGame, leaveGame } = require('./utils/games');
 
 const PORT = 3009;
 
@@ -29,20 +29,28 @@ io.on('connect', (socket) => {
             : scores[player[0]] < scores[player[1]]
             ? player[1]
             : 'tie';
-        socket.emit('gameover', winner);
+        io.to(gameRoomId).emit('gameover', winner);
+        leaveGame(gameRoomId);
       }, 93000);
     }
   });
   socket.on('moleClick', (data) => {
     let { username, index, currentMole, gameRoomId } = data;
     let currentGame = getCurrentGame(gameRoomId);
+    const [player1, player2] = Object.keys(currentGame.score);
     if (currentGame.currentMole === currentMole) {
       currentGame.score[username] += 10;
-      const result = {};
-      result[username] = currentGame.score;
+      const result = { index: null, score: {} };
       result.index = index;
+      result.score[player1] = currentGame.score[player1];
+      result.score[player2] = currentGame.score[player2];
       io.to(gameRoomId).emit('updateScore', result);
     }
+  });
+
+  socket.on('disconnect', (data) => {
+    console.log(data);
+    console.log('disconnect');
   });
 });
 
