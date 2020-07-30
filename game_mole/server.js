@@ -11,8 +11,8 @@ io.on('connect', (socket) => {
 	socket.on('gameStart', (username, gameRoomId) => {
 		let [game, refreshed] = gameJoin(username, gameRoomId, socket.id);
 		socket.join(gameRoomId);
+		io.to(gameRoomId).emit('init', (game.usernames, game.currentMole, game.score));
 		if(game.usernames.length === 2 && refreshed === false) {
-			socket.emit('init', game.usernames);
 			const moleTimer = setInterval( () => {
 				let randomIndex = Math.floor(Math.random() * 16);
 				io.to(gameRoomId).emit('generateMole', randomIndex);
