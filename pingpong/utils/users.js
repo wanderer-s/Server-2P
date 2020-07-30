@@ -12,7 +12,7 @@ function userJoin(id, username, room) {
   if(!rooms[room][id]){
     rooms[room][id] = user;
   }
-  console.log(rooms);
+  // console.log(rooms);
   return user;
 }
 
@@ -22,7 +22,17 @@ function userLeave(id) {
   for(let k in rooms){
     if(rooms[k][id]){
       tmp = rooms[k][id];
-      delete room[k][id];
+      delete rooms[k][id];
+    }
+  }
+  return tmp;
+}
+
+function getCurrentUser(id){
+  let tmp;
+  for(let k in rooms){
+    if(rooms[k][id]){
+      tmp = rooms[k][id];
     }
   }
   return tmp;
@@ -37,4 +47,5 @@ module.exports = {
   userJoin,
   userLeave,
   getRoomUsers,
+  getCurrentUser,
 };
