@@ -26,11 +26,11 @@ module.exports = {
 					userNum: 1
 				};
 				
-				if (params.gameCode === '0') {	//두더지 게임
+				if (params.gameCode === '1') {	//두더지 게임
 					moleRooms[params.roomId] = params;
-				} else if (params.gameCode === '1') {   //핑퐁게임
+				} else if (params.gameCode === '2') {   //핑퐁게임
 					pongRooms[params.roomId] = params;
-				} else if (params.gameCode === '2') {   //추가게임
+				} else if (params.gameCode === '3') {   //추가게임
 					cardRooms[params.roomId] =params;
 				}
 
@@ -51,11 +51,11 @@ module.exports = {
 				let getRooms;
 				let rooms = [];
 
-				if(gameCode === '0'){
+				if(gameCode === '1'){
 					getRooms = moleRooms;
-				} else if(gameCode === '1'){
-					getRooms = pongRooms;
 				} else if(gameCode === '2'){
+					getRooms = pongRooms;
+				} else if(gameCode === '3'){
 					getRooms = cardRooms;
 				}
 
