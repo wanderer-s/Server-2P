@@ -1,9 +1,10 @@
 const { createServer } = require('http');
-const app = require('express')();
+const express = require('express');
+const app = express();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
 
-const {gameJoin, getCurrentScores, getCurrentGame} = require('./utils/games');
+const {gameJoin, getCurrentScores, getCurrentGame, leaveGame} = require('./utils/games');
 
 const PORT = 3009;
 
@@ -28,6 +29,17 @@ io.on('connect', (socket) => {
 						? player[1]
 						: 'tie';
 				socket.emit('gameover', winner);
+				let result = {};
+				result.score = scores;
+				result.gameCode = 0;
+
+				fetch('http://localhost:3001',{
+					method: 'post',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: result});
+				leaveGame(gameRoomId);
 			},93000);
 		}
 	});
