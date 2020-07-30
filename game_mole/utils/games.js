@@ -19,12 +19,11 @@ function gameJoin(nickname, gameRoomId, socketId) {
 		games.push(game);
 		return [game, false]
 	} else {
-		games.find(gameRoomId => gameRoomId).usernames.push(nickname)
-		games.find(gameRoomId => gameRoomId).score[nickname] = 0
-
 		if(games.find(gameRoomId => gameRoomId).socketId.length === 2) {
 			return [games.find(gameRoomId => gameRoomId),true]
 		}
+		games.find(gameRoomId => gameRoomId).usernames.push(nickname)
+		games.find(gameRoomId => gameRoomId).score[nickname] = 0
 		games.find(gameRoomId => gameRoomId).socketId.push(socketId)
 		return [games.find(gameRoomId => gameRoomId), false]
 	}
