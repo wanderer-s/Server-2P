@@ -3,15 +3,16 @@ const app = require('express')();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
 
-const {gameJoin, getCurrentScores, getCurrentGame} = require('./utils/games');
+const {gameJoin, getCurrentScores, getCurrentGame, leaveGame} = require('./utils/games');
 
 const PORT = 3009;
 
 io.on('connect', (socket) => {
 	socket.on('gameStart', (username, gameRoomId) => {
-		let game = gameJoin(username, gameRoomId);
+		let [game, refreshed] = gameJoin(username, gameRoomId, socket.id);
 		socket.join(gameRoomId);
-		if(game.usernames.length === 2) {
+		if(game.usernames.length === 2 && refreshed === false) {
+			socket.emit('init', game.usernames);
 			const moleTimer = setInterval( () => {
 				let randomIndex = Math.floor(Math.random() * 16);
 				io.to(gameRoomId).emit('generateMole', randomIndex);
@@ -28,16 +29,19 @@ io.on('connect', (socket) => {
 						? player[1]
 						: 'tie';
 				socket.emit('gameover', winner);
+				leaveGame(gameRoomId);
 			},93000);
 		}
 	});
 	socket.on('moleClick', data => {
 		let {username, index, currentMole, gameRoomId} = data;
 		let currentGame = getCurrentGame(gameRoomId);
+		const [player1, player2] = Object.keys(currentGame.score);
 		if(currentGame.currentMole === currentMole) {
 			currentGame.score[username] += 10;
-			const result = {};
-			result[username] = currentGame.score;
+			const result = {score:{}};
+			result.score[player1] = currentGame.score[player1];
+			result.score[player2] = currentGame.score[player2];
 			result.index = index;
 			io.to(gameRoomId).emit('updateScore', result);
 		}
@@ -47,3 +51,30 @@ io.on('connect', (socket) => {
 httpServer.listen(PORT, () => {
 	console.log(`server on ${PORT}`);
 });
+
+
+/* 
+{
+	score: {
+		player1 : 10
+		player2 :
+	}
+	player1: 10
+	player2: 2
+	index: data.index
+}
+
+
+{
+	player1: 10,
+	pleyer2: 10
+}
+{
+	score: {
+		player1: 10,
+		pleyer2: 10
+}
+}
+score:
+{}
+*/

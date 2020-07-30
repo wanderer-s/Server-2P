@@ -3,10 +3,11 @@
 const games = [];
 
 // Join game
-function gameJoin(nickname, gameRoomId) {
+function gameJoin(nickname, gameRoomId, socketId) {
 	let game = {
 		gameRoomId,
 		usernames : [],
+		socketId : [],
 		currentMole: 0,
 		score: {
 		}
@@ -14,12 +15,18 @@ function gameJoin(nickname, gameRoomId) {
 	if(!games.find(gameRoomId => gameRoomId)) {
 		game.usernames.push(nickname)
 		game.score[nickname] = 0
+		game.socketId.push(socketId)
 		games.push(game);
-		return game
+		return [game, false]
 	} else {
 		games.find(gameRoomId => gameRoomId).usernames.push(nickname)
 		games.find(gameRoomId => gameRoomId).score[nickname] = 0
-		return games.find(gameRoomId => gameRoomId)
+
+		if(games.find(gameRoomId => gameRoomId).socketId.length === 2) {
+			return [games.find(gameRoomId => gameRoomId),true]
+		}
+		games.find(gameRoomId => gameRoomId).socketId.push(socketId)
+		return [games.find(gameRoomId => gameRoomId), false]
 	}
 }
 
