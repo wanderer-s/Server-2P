@@ -31,7 +31,7 @@ io.on('connect', (socket) => {
             : 'tie';
         io.to(gameRoomId).emit('gameover', winner);
         leaveGame(gameRoomId);
-      }, 10000);
+      }, 93000);
     }
   });
   socket.on('moleClick', (data) => {
