@@ -1,4 +1,5 @@
 /*eslint-disable*/
+
 const games = [];
 
 // Join game
@@ -50,27 +51,3 @@ module.exports = {
   getCurrentScores,
   leaveGame,
 };
-
-module.exports = {
-  gameJoin,
-  getCurrentGame,
-  getCurrentScores,
-  leaveGame,
-};
-
-/* 
-function
-- gameJoin
-- getCurrentGame
-- getGameUsers
-- emitScore
-
-{
-	gameRoomId : 게임 시작한 방 아이디
-	userNames : [방에 들어올 유저들 이름(nickname) 2개]
-	score : {
-		player1 : 0,
-		player2 : 0
-	}
-}
-*/

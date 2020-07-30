@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-/* eslint-disable indent */
+/*eslint-disable*/
 const { createServer } = require('http');
 const app = require('express')();
 const httpServer = createServer(app);
@@ -11,9 +10,10 @@ const PORT = 3009;
 
 io.on('connect', (socket) => {
   socket.on('gameStart', (username, gameRoomId) => {
-    let game = gameJoin(username, gameRoomId);
+    let [game, refreshed] = gameJoin(username, gameRoomId, socket.id);
     socket.join(gameRoomId);
-    if (game.usernames.length === 2) {
+    if (game.usernames.length === 2 && refreshed === false) {
+      socket.emit('init', game.usernames);
       const moleTimer = setInterval(() => {
         let randomIndex = Math.floor(Math.random() * 16);
         io.to(gameRoomId).emit('generateMole', randomIndex);
@@ -29,7 +29,7 @@ io.on('connect', (socket) => {
             : scores[player[0]] < scores[player[1]]
             ? player[1]
             : 'tie';
-        io.to(gameRoomId).emit('gameover', winner);
+        socket.emit('gameover', winner);
         leaveGame(gameRoomId);
       }, 93000);
     }
@@ -40,17 +40,12 @@ io.on('connect', (socket) => {
     const [player1, player2] = Object.keys(currentGame.score);
     if (currentGame.currentMole === currentMole) {
       currentGame.score[username] += 10;
-      const result = { index: null, score: {} };
-      result.index = index;
+      const result = { score: {} };
       result.score[player1] = currentGame.score[player1];
       result.score[player2] = currentGame.score[player2];
+      result.index = index;
       io.to(gameRoomId).emit('updateScore', result);
     }
-  });
-
-  socket.on('disconnect', (data) => {
-    console.log(data);
-    console.log('disconnect');
   });
 });
 
