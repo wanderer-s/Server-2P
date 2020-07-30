@@ -6,7 +6,8 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const development = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: process.env.DATABASE_PRODUCTION_PASSWORD,
+  // password: process.env.DATABASE_PRODUCTION_PASSWORD,
+  password: 'dnjswnsqkqh123',
   database: '2p4p',
 });
 development.connect();

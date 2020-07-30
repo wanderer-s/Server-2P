@@ -29,6 +29,7 @@ io.on('connection', (socket) => {
   
   // mouse move
   socket.on('mouseMove', (x) => {
+    console.log(x)
     //내화면
     // console.log(x);
     let user = getCurrentUser(socket.id);
