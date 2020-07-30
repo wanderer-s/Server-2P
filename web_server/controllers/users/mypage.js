@@ -30,7 +30,7 @@ module.exports = {
 					userId,
 					avatarId
 				};
-				console.log(param);
+				// console.log(param);
 	
 				await mypage.put(param);
 				res.status(200).json({message: '성공적으로 변경되었습니다'});
@@ -39,5 +39,9 @@ module.exports = {
 				res.status(401).json({error: '다시 로그인해주세요'});
 			}
 		}
+	},
+	post: async function(req) {
+		let {body} = await req
+		await mypage.post(body)
 	}
 };
