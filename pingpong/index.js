@@ -5,46 +5,26 @@ const socketio = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-const { userJoin, userLeave, getRoomUsers } = require('./utils/users');
-
-// // Run when client connects
-io.on('connection', (socket) => {
-  //방 입장시
-  socket.on('joinRoom', ({ username, room }) => {
-    console.log('username, room: ', username, room);
-
-    const user = userJoin(socket.id, username, room);
-    const roomUsers = getRoomUsers(user.room.roomId);
-
-    socket.join(user.room);
-
-    io.to(user.room).emit('loadUsers', roomUsers);
-  });
-  
-  // // mouse move
-  // socket.on('mouseMove', (username, x) => {
-  //   //내화면
-  //   socket.emit('myMove', x);
-  //   socket.broadcast.to().emit('rivalMove',x);
-  // });
-
-  // 방 나가기
-  socket.on('disconnect', () => {
-    // const user = userLeave(socket.id);
-
-    // if (user) {
-    //   const roomUsers = getRoomUsers(user.room.roomId);
-    //   io.to(user.room.roomId).emit('loadUsers', roomUsers);
-    // }
-  });
-});
+const { userJoin, userLeave, getRoomUsers, getCurrentUser } = require('./utils/users');
 
 // Run when client connects
 io.on('connection', (socket) => {
   //방 입장시
-  socket.on('joinRoom', () => {
-    console.log('join');
-    //2명일 때 공 시작
+  socket.on('joinRoom', ({username, room}) => {
+    const user = userJoin(socket.id, username, room);
+    const roomUsers = getRoomUsers(user.room);
+
+    socket.join(user.room);
+    console.log(Object.keys(roomUsers).length);
+    if(Object.keys(roomUsers).length === 2){
+      console.log('game start');
+
+      setTimeout(() => {
+        socket.emit('start', true);
+        socket.broadcast.to(user.room).emit('start',false);
+      }, 3000);
+    }
+    io.to(user.room).emit('loadUsers', roomUsers);
   });
   
   // mouse move
@@ -52,19 +32,38 @@ io.on('connection', (socket) => {
     console.log(x)
     //내화면
     // console.log(x);
-    // socket.emit('myMove', x);
-    socket.broadcast.emit('rivalMove',x);
+    let user = getCurrentUser(socket.id);
+    socket.emit('myMove', x);
+    socket.broadcast.to(user.room).emit('rivalMove',x);
   });
 
   //점수 난 경우
-  socket.on('start', (x) => {
-    console.log(x)
-    socket.emit('start', x);
-    socket.broadcast.emit('start',!x);
+  socket.on('score', (res) => {
+    let user = getCurrentUser(socket.id);
+    let users = getRoomUsers(user.room);
+    // console.log(res);
+    console.log(user.id + ' ' + res);
+    user.score++;
+    let scoreData = {}
+    scoreData[users[Object.keys(users)[0]].username] = users[Object.keys(users)[0]].score
+    scoreData[users[Object.keys(users)[1]].username] = users[Object.keys(users)[1]].score
+    console.log(scoreData);
+
+    console.log()
+
+    io.to(user.room).emit('reset');
+    
+    //한 번만 실행될 수 있도록 변경
+    setTimeout(() => {
+      socket.emit('start', true);
+      socket.broadcast.to(user.room).emit('start',false);
+    }, 3000);
   })
   // 방 나가기
   socket.on('disconnect', () => {
-
+    let user = userLeave(socket.id);
+    console.log('leave');
+    console.log(user);
   });
 });
 const PORT = process.env.PORT || 3005;
