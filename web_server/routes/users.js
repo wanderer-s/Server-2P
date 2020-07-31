@@ -18,4 +18,7 @@ router.get('/mypage', userController.mypage.get);
 // * PUT /users/mypage
 router.put('/mypage', userController.mypage.put);
 
+// * POST /users/mypage from game_server
+router.post('/mypage', userController.mypage.post)
+
 module.exports = router;
