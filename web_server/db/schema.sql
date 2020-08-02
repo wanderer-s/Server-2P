@@ -1,3 +1,5 @@
+use 2p4p
+
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `userId` varchar(40) not null UNIQUE,
