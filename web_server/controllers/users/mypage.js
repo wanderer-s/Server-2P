@@ -40,8 +40,13 @@ module.exports = {
 			}
 		}
 	},
-	post: async function(req) {
+	post: async function(req, res) {
 		let {body} = await req
-		await mypage.post(body)
+		try {
+			let result = await mypage.post(body)
+			res.status(200).send(result)
+		} catch (error) {
+			res.status(404).send(error)
+		}
 	}
 };
