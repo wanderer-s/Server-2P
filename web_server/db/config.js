@@ -1,5 +1,5 @@
 /* eslint-disable */
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
