@@ -43,8 +43,8 @@ module.exports = {
 	post: async function(req, res) {
 		let {body} = await req
 		try {
-			let result = await mypage.post(body)
-			res.status(200).send(result)
+			await mypage.post(body)
+			res.status(200).send('game result has been sent')
 		} catch (error) {
 			res.status(404).send(error)
 		}

@@ -68,7 +68,7 @@ module.exports = {
 		let {score} = await data
 		let {gameCode} = await data
 		let [player1, player2] = Object.keys(score)
-		const connection = await db.getConnection()
+		const connection = await db.promise().getConnection()
 		
 		try {
 			await connection.beginTransaction()
@@ -107,19 +107,19 @@ module.exports = {
 //ID from users table (checked)
 async function getUserId(nickname) {
 	let sql = 'select id from users where nickname = ?'
-	let result = (await db.query(sql, nickname))[0][0]
+	let result = (await db.promise().query(sql, nickname))[0][0]
 	return result.id
 }
 
 async function getScoreId(gameCode,userId) {
 	let sql = 'select id from users_game where userId = ? and gameCode = ?'
-	let result = (await db.query(sql, [userId, gameCode]))[0][0]
+	let result = (await db.promise().query(sql, [userId, gameCode]))[0][0]
 	return result.id
 }
 
 //get player's game history
 async function getHistory(gameCode, nickname) {
-	const connection = await db.getConnection()
+	const connection = await db.promise().getConnection()
 	try {
 		await connection.beginTransaction()
 		let userId = await getUserId(nickname)
@@ -150,7 +150,7 @@ async function getHistory(gameCode, nickname) {
 
 //when a player played a game for the first time this function insert a row at users_game table and playerscore table
 async function makeHistory(gameCode, nickname) {
-	const connection = await db.getConnection()
+	const connection = await db.promise().getConnection()
 	try {
 		await connection.beginTransaction()
 		let userId = await getUserId(nickname)
@@ -185,7 +185,7 @@ async function makeHistory(gameCode, nickname) {
 
 //when a game finished update score for playerscore table
 async function updateScore(gameCode, winner, loser) {
-	const connection = await db.getConnection()
+	const connection = await db.promise().getConnection()
 	try {
 		await connection.beginTransaction()
 		let {
@@ -228,7 +228,7 @@ async function updateScore(gameCode, winner, loser) {
 }
 
 async function updateDraw(gameCode, players) {
-	const connection = await db.getConnection()
+	const connection = await db.promise().getConnection()
 	try {
 		await connection.beginTransaction()
 
