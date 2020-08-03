@@ -34,7 +34,7 @@ io.on('connect', (socket) => {
         io.to(gameRoomId).emit('gameover', winner);
         let result = {}
         result.score = scores
-        result.gameCode = 0
+        result.gameCode = 1
         
         fetch('http://localhost:3001', {
           method: 'post',

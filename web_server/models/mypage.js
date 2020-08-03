@@ -68,12 +68,13 @@ module.exports = {
 		let {score} = await data
 		let {gameCode} = await data
 		let [player1, player2] = Object.keys(score)
-
+		const connection = await db.getConnection()
+		
 		try {
-			await db.beginTransaction()
+			await connection.beginTransaction()
 			await makeHistory(gameCode, player1)
 			await makeHistory(gameCode, player2)
-			
+
 			let winner
 			let loser
 			let draw = []
@@ -81,60 +82,77 @@ module.exports = {
 			if(score[player1] > score[player2]) {
 				winner = player1
 				loser = player2
+				let result = await updateScore(gameCode, winner, loser)
+				console.log(result)
 			} else if (score[player1] < score[player2]) {
 				winner = player2
 				loser = player1
+				let result = await updateScore(gameCode, winner, loser)
+				console.log(result)
 			} else {
 				draw.push(player1)
 				draw.push(player2)
-				updateDraw(gameCode, draw)
+				await updateDraw(gameCode, draw)
 			}
-	
-			await updateScore(gameCode, winner, loser)
-			db.commit()
+			await connection.commit()
 		} catch (error) {
-			db.rollback()
-			return new Error(error)
+			await connection.rollback()
+			return error
+		} finally {
+			connection.release()
 		}
 	}
 };
 
-//ID from users table
+//ID from users table (checked)
 async function getUserId(nickname) {
 	let sql = 'select id from users where nickname = ?'
-	return await db.query(sql, nickname)
+	let result = (await db.query(sql, nickname))[0][0]
+	return result.id
+}
+
+async function getScoreId(gameCode,userId) {
+	let sql = 'select id from users_game where userId = ? and gameCode = ?'
+	let result = (await db.query(sql, [userId, gameCode]))[0][0]
+	return result.id
 }
 
 //get player's game history
 async function getHistory(gameCode, nickname) {
+	const connection = await db.getConnection()
 	try {
-		await db.beginTransaction()
+		await connection.beginTransaction()
 		let userId = await getUserId(nickname)
-		let sqlScoreId = `
-		select id
-		from users_game
-		where userId = ?
-		and gameCode = ?`
-	
-		let scoreId = await db.query(sqlScoreId, [userId, gameCode])
-
+		let scoreId = await getScoreId(gameCode, userId)
 		let sqlHistory = `
 			select *
 			from playerScore
 			where scoreId = ?`
 	
-		await db.commit()
-		return await db.query(sqlHistory, scoreId)
+		await connection.commit()
+		return (await connection.query(sqlHistory, [scoreId]))[0][0]
+		/*
+		{
+			scoreId : 1,
+			gamesPlayed : 3,
+			gamesWon : 2,
+			gamesTied: 0
+		}
+		 */
 	}	catch(error) {
-		db.rollback()
-		return new Error(error)
+		await connection.rollback()
+		console.log(error)
+		throw ('getHistory error')
+	} finally {
+		connection.release()
 	}
 }
 
 //when a player played a game for the first time this function insert a row at users_game table and playerscore table
 async function makeHistory(gameCode, nickname) {
+	const connection = await db.getConnection()
 	try {
-		await db.beginTransaction()
+		await connection.beginTransaction()
 		let userId = await getUserId(nickname)
 
 		let sql = `
@@ -147,63 +165,97 @@ async function makeHistory(gameCode, nickname) {
 			and gameCode = ?
 		)`
 
-		let row = await db.query(sql, [userId, gameCode])
-		let scoreId = row.insertId
+		let row = (await connection.query(sql, [userId, gameCode, userId, gameCode]))[0]
 		if(row.affectedRows === 1) {
+			let scoreId = row.insertId
 			let sql = `
 			insert into playerscore (scoreId, gamesPlayed, gamesWon, gamesTied)
 			values(?, ?, ?, ?)`
-			db.query(sql, [scoreId, 0, 0 ,0])
+			await connection.query(sql, [scoreId, 0, 0 ,0])
 		} 
-		await db.commit()
+		await connection.commit()
 	} catch(error) {
-		await db.rollback()
-		return new Error(error)
+		await connection.rollback()
+		console.log(error)
+		throw ('makeHistory error')
+	} finally {
+		connection.release()
 	}
 }
 
 //when a game finished update score for playerscore table
 async function updateScore(gameCode, winner, loser) {
+	const connection = await db.getConnection()
 	try {
-		await db.beginTransaction()
-		let {winnerScoreId, winnerGamesPlayed, winnerGamesWon, winnerGamesTied} = await getHistory(gameCode, winner)
-		let {loserScoreId, loserGamesPlayed, loserGamesWon, loserGamesTied} = await getHistory(gameCode, loser)
+		await connection.beginTransaction()
+		let {
+			scoreId: winnerScoreId,
+			gamesPlayed: winnerGamesPlayed,
+			gamesWon: winnerGamesWon,
+			gamesTied: winnerGamesTied} = await getHistory(gameCode, winner)
+	
+		let {
+			scoreId: loserScoreId,
+			gamesPlayed: loserGamesPlayed,
+			gamesWon: loserGamesWon,
+			gamesTied: loserGamesTied} = await getHistory(gameCode, loser)
+		
 
 		let sql =`
-		update playscore
+		update playerscore
 		set gamesPlayed = ?,
-				gamesWon = ?
-				games Tied = ?
+				gamesWon = ?,
+				gamesTied = ?
 		where scoreId = ?
 		`
-		await db.query(sql, [winnerGamesPlayed + 1, winnerGamesWon + 1, winnerGamesTied, winnerScoreId])
-		await db.query(sql, [loserGamesPlayed + 1, loserGamesWon, loserGamesTied, loserScoreId])
-		await db.commit()
+		/* console.log(`
+		b winner scoreid: ${winnerScoreId}
+		b winner played: ${winnerGamesPlayed}
+		b winner won: ${winnerGamesWon}
+		b winner tied: ${winnerGamesTied}`) */
+
+		await connection.query(sql, [winnerGamesPlayed + 1, winnerGamesWon + 1, winnerGamesTied, winnerScoreId])
+		await connection.query(sql, [loserGamesPlayed + 1, loserGamesWon, loserGamesTied, loserScoreId])
+		
+		await connection.commit()
 	} catch (error) {
-		await db.rollback()
-		return new Error(error)
+		await connection.rollback()
+		console.log(error)
+		throw ('updateScore error')
+	} finally {
+		connection.release()
 	}
 }
 
 async function updateDraw(gameCode, players) {
+	const connection = await db.getConnection()
 	try {
-		await db.beginTransaction()
-		let {player1ScoreId, player1GamesPlayed, player1GamesTied} = await getHistory(gameCode, players[0])
-		let {player2ScoreId, player2GamesPlayed, player2GamesTied} = await getHistory(gameCode, players[1])
+		await connection.beginTransaction()
+
+		let {
+			scoreId: player1ScoreId,
+			gamesPlayed: player1GamesPlayed,
+			gamesTied: player1GamesTied} = await getHistory(gameCode, players[0])
+		let {
+			scoreId: player2ScoreId,
+			gamesPlayed: player2GamesPlayed,
+			gamesTied: player2GamesTied} = await getHistory(gameCode, players[1])
 		
 		let sql =`
-		update playscore
+		update playerScore
 		set gamesPlayed = ?,
-				games Tied = ?
+				gamesTied = ?
 		where scoreId = ?
 		`
 
-		await db.query(sql, [player1GamesPlayed + 1, player1GamesTied + 1, player1ScoreId])
-		await db.query(sql, [player2GamesPlayed + 1, player2GamesTied + 1, player2ScoreId])
-		await db.commit()
+		await connection.query(sql, [player1GamesPlayed + 1, player1GamesTied + 1, player1ScoreId])
+		await connection.query(sql, [player2GamesPlayed + 1, player2GamesTied + 1, player2ScoreId])
+		await connection.commit()
 	} catch (error) {
-		await db.rollback()
-		return new Error(error)
+		await connection.rollback()
+		console.log(error)
+		throw ('updateDraw error')
+	} finally {
+		connection.release()
 	}
-
 }
