@@ -14,7 +14,7 @@ module.exports = {
 					p.gamesPlayed - p.gamesWon - p.gamesTied as gamesLost
 				from users_game ug
 				join gameList gl on gl.code = ug.gameCode
-				join playerscore p on p.scoreId = ug.id
+				join playerScore p on p.scoreId = ug.id
 				where ug.userId = ?
 				order by gl.gameName
 				`;
@@ -148,7 +148,7 @@ async function getHistory(gameCode, nickname) {
 	}
 }
 
-//when a player played a game for the first time this function insert a row at users_game table and playerscore table
+//when a player played a game for the first time this function insert a row at users_game table and playerScore table
 async function makeHistory(gameCode, nickname) {
 	const connection = await db.promise().getConnection()
 	try {
@@ -169,7 +169,7 @@ async function makeHistory(gameCode, nickname) {
 		if(row.affectedRows === 1) {
 			let scoreId = row.insertId
 			let sql = `
-			insert into playerscore (scoreId, gamesPlayed, gamesWon, gamesTied)
+			insert into playerScore (scoreId, gamesPlayed, gamesWon, gamesTied)
 			values(?, ?, ?, ?)`
 			await connection.query(sql, [scoreId, 0, 0 ,0])
 		} 
@@ -183,7 +183,7 @@ async function makeHistory(gameCode, nickname) {
 	}
 }
 
-//when a game finished update score for playerscore table
+//when a game finished update score for playerScore table
 async function updateScore(gameCode, winner, loser) {
 	const connection = await db.promise().getConnection()
 	try {
@@ -202,7 +202,7 @@ async function updateScore(gameCode, winner, loser) {
 		
 
 		let sql =`
-		update playerscore
+		update playerScore
 		set gamesPlayed = ?,
 				gamesWon = ?,
 				gamesTied = ?
