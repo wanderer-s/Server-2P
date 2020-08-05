@@ -133,15 +133,31 @@ module.exports = {
         let nickname = req.body.username;
         let gameCode = req.body.gameCode;
 
-        if (gameCode === 0) {
-          // console.log(moleRooms[roomId]);
-          // console.log(nickname)
+        if (gameCode === '1') {
           if (moleRooms[roomId].roomOwner === nickname) {
             delete moleRooms[roomId];
             res.status(200).json({ message: '방장이 방을 끝냈습니다' });
           } else {
             moleRooms[roomId].userNum -= 1;
             if (moleRooms[roomId].userNum <= 0) delete moleRooms[roomId];
+            res.status(200).json({ message: '한 명이 방을 나갔습니다' });
+          }
+        } else if (gameCode === '2') {
+          if (pongRooms[roomId].roomOwner === nickname) {
+            delete pongRooms[roomId];
+            res.status(200).json({ message: '방장이 방을 끝냈습니다' });
+          } else {
+            pongRooms[roomId].userNum -= 1;
+            if (pongRooms[roomId].userNum <= 0) delete pongRooms[roomId];
+            res.status(200).json({ message: '한 명이 방을 나갔습니다' });
+          }
+        } else if (gameCode === '3') {
+          if (pongRooms[roomId].roomOwner === nickname) {
+            delete pongRooms[roomId];
+            res.status(200).json({ message: '방장이 방을 끝냈습니다' });
+          } else {
+            pongRooms[roomId].userNum -= 1;
+            if (pongRooms[roomId].userNum <= 0) delete pongRooms[roomId];
             res.status(200).json({ message: '한 명이 방을 나갔습니다' });
           }
         } else {
