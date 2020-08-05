@@ -2,6 +2,8 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const {web_server_url} = require('../url')
+const fetch = require("node-fetch");
 const {
   randomNum,
   getResult,
@@ -13,7 +15,8 @@ const {
   userJoin,
   getCurrentUser,
   userLeave,
-  getRoomUsers
+  getRoomUsers,
+  endRoom
 } = require('./utils/users');
 
 const app = express();
@@ -87,6 +90,7 @@ io.on('connection', socket => {
       if(log[user.username][i].arr === '----')cnt ++;
       if(cnt >= 2){
         io.to(room).emit('end', rival);
+        endAll(rival, user.username, room);
       }
     }
 
@@ -104,6 +108,15 @@ io.on('connection', socket => {
   socket.on('submit', ({username, room, arr}) => {
     console.log({username, arr});
     let user = getCurrentUser(socket.id);
+    let users = getRoomUsers(user.room);
+
+    let rival;
+    if(users[0].username === user.username){
+      rival = users[1].username;
+    } else {
+      rival = users[0].username;
+    }
+
     if(getRoomUsers(room)[roomNum[room].turn].username === username){
       let res = getResult(roomNum[room].ans, arr);
       // console.log(roomNum[room].ans);
@@ -118,12 +131,14 @@ io.on('connection', socket => {
 
       if(log[getRoomUsers(user.room)[0].username].length === 5 && log[getRoomUsers(user.room)[1].username].length === 5){
         io.to(room).emit('end', null);
+        endAll(username, rival, room, true);
         console.log('draw');
       }
 
       if(res === '4S0B'){
         // io.to(room).emit('message', `${username}님이 승리하셨습니다`);
         io.to(room).emit('end', username);
+        endAll(username, rival, room);
         // io.to(room).emit('end', {winner: username, answer: roomNum[room].ans});
       } else {
         !roomNum[room].turn ? roomNum[room].turn = 1 : roomNum[room].turn = 0;
@@ -152,6 +167,31 @@ io.on('connection', socket => {
     }
   });
 });
+
+function endAll (winner, loser, room, isDraw = false){
+  endGame(room);
+  endRoom(room);
+
+  let result = {}
+  result.score = {};
+  result.gameCode = 3;
+
+  if(isDraw){
+    result.score[winner] = 0;
+    result.score[loser] = 0;
+  } else {
+    result.score[winner] = 1;
+    result.score[loser] = 0;
+  }
+
+  fetch(`${web_server_url}/users/mypage`, {
+    method: 'post',
+    header: {
+      'Content-type': 'appliction/json'
+    },
+    body: result
+  })
+}
 
 const PORT = process.env.PORT || 3006;
 
