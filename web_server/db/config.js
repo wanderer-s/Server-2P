@@ -10,6 +10,7 @@ const development = mysql.createPool({
   database: '2p4p',
 });
 
+module.exports = development;
 /* const production = mysql.createConnection({
     host: process.env.DATABASE_PRODUCTION_HOST,
     user: process.env.DATABASE_PRODUCTION_USER,
@@ -18,5 +19,9 @@ const development = mysql.createPool({
   })
   poduction.connect()
    */
-
-module.exports = development;
+/* const production = mysql.createPool({
+    host: 'master.cxbrvfen2is1.ap-northeast-2.rds.amazonaws.com',
+    user: 'master',
+    password: 
+    database: 'database2P',
+  }); */
