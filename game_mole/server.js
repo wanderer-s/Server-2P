@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
+const {web_server_url} = require('../url')
 
 const { gameJoin, getCurrentScores, getCurrentGame, leaveGame } = require('./utils/games');
 
@@ -36,7 +37,7 @@ io.on('connect', (socket) => {
         result.score = scores
         result.gameCode = 1
         
-        fetch('http://localhost:3001', {
+        fetch(`${web_server_url}/users/mypage`, {
           method: 'post',
           header: {
             'Content-type': 'appliction/json'
