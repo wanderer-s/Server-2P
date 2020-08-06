@@ -119,7 +119,7 @@ io.on('connection', socket => {
 
     if(getRoomUsers(room)[roomNum[room].turn].username === username){
       let res = getResult(roomNum[room].ans, arr);
-      // console.log(roomNum[room].ans);
+      console.log(roomNum[room].ans);
       // console.log(res);
       // io.to(room).emit('message', `${username}님이 ${arr.join('')}을 입력했습니다`);
       // io.to(room).emit('message', `결과는 ${res} 입니다`);
@@ -158,27 +158,28 @@ io.on('connection', socket => {
     console.log(user);
     const users = getRoomUsers(user.room);
     let rival;
-    // console.log(users.length);
-    if(users.length === 2){
+    console.log(users.length);
+    if(users.length === 1){
       console.log('gg')
       if(users[0].username && (users[0].username === user.username)){
         rival = users[1].username;
       } else {
         rival = users[0].username;
       }
+      io.to(user.room).emit('end', rival);
+      endAll(rival, user.username, user.room, io);
     }
     
     console.log('leave');
     if (user) {
       //부정으로 나간 경우
-      io.to(user.room).emit('end', rival);
 
       io.to(user.room).emit('message', `${user.username}님이 나가셨습니다`);
       io.to(user.room).emit('roomUsers', {
         room: user.room,
         users: getRoomUsers(user.room)
       });
-      endAll(rival, user.username, user.room, io);
+      
     }
   });
 });
@@ -202,14 +203,13 @@ function endAll (winner, loser, room,io, isDraw = false){
   }
   console.log(result);
   fetch(`${web_server_url}/users/mypage`, {
-    port: PORT,
     method: 'post',
-    header: {
-      'Content-type': 'appliction/json'
+    headers: {
+      'Content-type': 'application/json'
     },
-    body: result
+    body: JSON.stringify(result)
   })
-  .then(result => console.log(result))
+  // .then(result => console.log(result))
   .catch(err => console.log(err));
 }
 
