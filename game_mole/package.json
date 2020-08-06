@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "mysql2": "^2.1.0",
+    "node-fetch": "^2.6.0",
     "socketio": "^1.0.0"
   },
   "devDependencies": {
@@ -20,11 +21,14 @@
     "nodemon": "^2.0.4"
   },
   "husky": {
-    "hooks" : {
-      "pre-commit" : "lint-staged"
+    "hooks": {
+      "pre-commit": "lint-staged"
     }
   },
-  "lint-staged" : {
-    "*.js" : ["eslint --fix","git add"]
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
