@@ -82,13 +82,11 @@ module.exports = {
 			if(score[player1] > score[player2]) {
 				winner = player1
 				loser = player2
-				let result = await updateScore(gameCode, winner, loser)
-				console.log(result)
+				await updateScore(gameCode, winner, loser)
 			} else if (score[player1] < score[player2]) {
 				winner = player2
 				loser = player1
-				let result = await updateScore(gameCode, winner, loser)
-				console.log(result)
+				await updateScore(gameCode, winner, loser)
 			} else {
 				draw.push(player1)
 				draw.push(player2)
