@@ -158,8 +158,8 @@ io.on('connection', socket => {
     console.log(user);
     const users = getRoomUsers(user.room);
     let rival;
-    // console.log(users.length);
-    if(users.length === 2){
+    console.log(users.length);
+    if(users.length === 1){
       console.log('gg')
       if(users[0].username && (users[0].username === user.username)){
         rival = users[1].username;
