@@ -152,12 +152,12 @@ module.exports = {
             res.status(200).json({ message: '한 명이 방을 나갔습니다' });
           }
         } else if (gameCode === '3') {
-          if (pongRooms[roomId].roomOwner === nickname) {
-            delete pongRooms[roomId];
+          if (cardRooms[roomId].roomOwner === nickname) {
+            delete cardRooms[roomId];
             res.status(200).json({ message: '방장이 방을 끝냈습니다' });
           } else {
-            pongRooms[roomId].userNum -= 1;
-            if (pongRooms[roomId].userNum <= 0) delete pongRooms[roomId];
+            cardRooms[roomId].userNum -= 1;
+            if (cardRooms[roomId].userNum <= 0) delete cardRooms[roomId];
             res.status(200).json({ message: '한 명이 방을 나갔습니다' });
           }
         } else {

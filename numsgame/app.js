@@ -90,7 +90,7 @@ io.on('connection', socket => {
       if(log[user.username][i].arr === '----')cnt ++;
       if(cnt >= 2){
         io.to(room).emit('end', rival);
-        endAll(rival, user.username, room);
+        endAll(rival, user.username, room, io);
       }
     }
 
@@ -131,14 +131,14 @@ io.on('connection', socket => {
 
       if(log[getRoomUsers(user.room)[0].username].length === 5 && log[getRoomUsers(user.room)[1].username].length === 5){
         io.to(room).emit('end', null);
-        endAll(username, rival, room, true);
+        endAll(username, rival, room,io, true);
         console.log('draw');
       }
 
       if(res === '4S0B'){
         // io.to(room).emit('message', `${username}님이 승리하셨습니다`);
         io.to(room).emit('end', username);
-        endAll(username, rival, room);
+        endAll(username, rival, room, io);
         // io.to(room).emit('end', {winner: username, answer: roomNum[room].ans});
       } else {
         !roomNum[room].turn ? roomNum[room].turn = 1 : roomNum[room].turn = 0;
@@ -156,21 +156,38 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     const user = userLeave(socket.id);
     console.log(user);
+    const users = getRoomUsers(user.room);
+    let rival;
+    // console.log(users.length);
+    if(users.length === 2){
+      console.log('gg')
+      if(users[0].username && (users[0].username === user.username)){
+        rival = users[1].username;
+      } else {
+        rival = users[0].username;
+      }
+    }
+    
     console.log('leave');
     if (user) {
       //부정으로 나간 경우
+      io.to(user.room).emit('end', rival);
+
       io.to(user.room).emit('message', `${user.username}님이 나가셨습니다`);
       io.to(user.room).emit('roomUsers', {
         room: user.room,
         users: getRoomUsers(user.room)
       });
+      endAll(rival, user.username, user.room, io);
     }
   });
 });
 
-function endAll (winner, loser, room, isDraw = false){
+function endAll (winner, loser, room,io, isDraw = false){
   endGame(room);
   endRoom(room);
+
+  io.to(room).emit('stop');
 
   let result = {}
   result.score = {};
@@ -183,14 +200,17 @@ function endAll (winner, loser, room, isDraw = false){
     result.score[winner] = 1;
     result.score[loser] = 0;
   }
-
+  console.log(result);
   fetch(`${web_server_url}/users/mypage`, {
+    port: PORT,
     method: 'post',
     header: {
       'Content-type': 'appliction/json'
     },
     body: result
   })
+  .then(result => console.log(result))
+  .catch(err => console.log(err));
 }
 
 const PORT = process.env.PORT || 3006;
