@@ -61,7 +61,7 @@ module.exports = {
 							where userId = ? and password = ?`;
 					db.query(sql, [userId, password], (error, result) => {
 						if(!result.length) reject(new Error('loginErr'));
-						console.log(result);
+						// console.log(result);
 						error ? reject(error) : resolve(result);
 					});
 				});

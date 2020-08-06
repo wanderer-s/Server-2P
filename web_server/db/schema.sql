@@ -5,7 +5,7 @@ CREATE TABLE `users` (
   `userId` varchar(40) not null UNIQUE,
   `nickname` varchar(15) not null UNIQUE,
   `socialId` varchar(20) UNIQUE,
-  `avatarId` int,
+  `avatarId` int not null default 0,
   `password` varchar(150)
 );
 
