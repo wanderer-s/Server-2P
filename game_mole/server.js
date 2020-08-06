@@ -5,6 +5,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
 const fetch = require('node-fetch');
+
 const { web_server_url } = require('../url');
 
 const { gameJoin, getCurrentScores, getCurrentGame, leaveGame } = require('./utils/games');
@@ -44,7 +45,6 @@ io.on('connect', (socket) => {
           },
           body: JSON.stringify(result),
         });
-
         leaveGame(gameRoomId);
       }, 10000);
     }

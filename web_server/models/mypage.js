@@ -73,32 +73,30 @@ module.exports = {
       await makeHistory(gameCode, player1);
       await makeHistory(gameCode, player2);
 
-      let winner;
-      let loser;
-      let draw = [];
-
-      if (score[player1] > score[player2]) {
-        winner = player1;
-        loser = player2;
-        let result = await updateScore(gameCode, winner, loser);
-        console.log(result);
-      } else if (score[player1] < score[player2]) {
-        winner = player2;
-        loser = player1;
-        let result = await updateScore(gameCode, winner, loser);
-        console.log(result);
-      } else {
-        draw.push(player1);
-        draw.push(player2);
-        await updateDraw(gameCode, draw);
-      }
-      await connection.commit();
-    } catch (error) {
-      await connection.rollback();
-      return error;
-    } finally {
-      connection.release();
-    }
+     let winner
+			let loser
+			let draw = []
+	
+			if(score[player1] > score[player2]) {
+				winner = player1
+				loser = player2
+				await updateScore(gameCode, winner, loser)
+			} else if (score[player1] < score[player2]) {
+				winner = player2
+				loser = player1
+				await updateScore(gameCode, winner, loser)
+			} else {
+				draw.push(player1)
+				draw.push(player2)
+				await updateDraw(gameCode, draw)
+			}
+			await connection.commit()
+		} catch (error) {
+			await connection.rollback()
+			return error
+		} finally {
+			connection.release()
+		}
   },
 };
 
