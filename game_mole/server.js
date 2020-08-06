@@ -5,6 +5,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = require('socket.io')(httpServer);
 const {web_server_url} = require('../url')
+const fetch = require('node-fetch')
 
 const { gameJoin, getCurrentScores, getCurrentGame, leaveGame } = require('./utils/games');
 
@@ -39,10 +40,11 @@ io.on('connect', (socket) => {
         
         fetch(`${web_server_url}/users/mypage`, {
           method: 'post',
-          header: {
-            'Content-type': 'appliction/json'
+          headers: {
+            'Content-type': 'application/json'
           },
-          body: result})
+          body: JSON.stringify(result)
+        })
         leaveGame(gameRoomId);
       }, 93000);
     }
