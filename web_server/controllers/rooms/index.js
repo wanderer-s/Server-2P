@@ -39,9 +39,7 @@ module.exports = {
           cardRooms[params.roomId] = params;
         }
 
-        res.status(200).json({ message: '방을 성공적으로 생성했습니다.' });
-        // console.log(moleRooms);
-        //redirection?
+        res.status(200).json({ message: '방을 성공적으로 생성했습니다.', roomId: params.roomId });
       } catch (err) {
         console.error(err);
         res.status(501).json({ error: JSON.stringify(err) });
@@ -132,7 +130,7 @@ module.exports = {
         let roomId = req.body.roomId;
         let nickname = req.body.username;
         let gameCode = req.body.gameCode;
-
+        console.log(moleRooms[roomId], 'line 135 room id');
         if (gameCode === '1') {
           if (moleRooms[roomId].roomOwner === nickname) {
             delete moleRooms[roomId];
