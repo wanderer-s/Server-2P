@@ -56,17 +56,24 @@ io.on('connection', (socket) => {
   socket.on('leave', () => {
     const user = userLeave(socket.id);
     const roomUsers = getRoomUsers(user.room.roomId);
-    socket.leave(user.room.roomId);
-    io.to(user.room.roomId).emit('loadUsers', roomUsers);
-    socket.broadcast.to(user.room.roomId).emit('systemMessage', {
-      username: 'System',
-      text: `${user.userInfo.username} has left the chat`,
-    });
+
+    if (user.isHost) {
+      // when host left
+      socket.leave(user.room.roomId);
+      socket.broadcast.to(user.room.roomId).emit('deleteRoom');
+    } else {
+      // when guest left
+      socket.leave(user.room.roomId);
+      io.to(user.room.roomId).emit('loadUsers', roomUsers);
+      socket.broadcast.to(user.room.roomId).emit('systemMessage', {
+        username: 'System',
+        text: `${user.userInfo.username} has left the chat`,
+      });
+    }
   });
   // 방 나가기
   socket.on('disconnect', () => {
     const user = userLeave(socket.id);
-
     if (user) {
       const roomUsers = getRoomUsers(user.room.roomId);
       io.to(user.room.roomId).emit('loadUsers', roomUsers);
