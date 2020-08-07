@@ -1,3 +1,4 @@
+/* eslint-disable */
 //express 서버
 const express = require('express');
 
@@ -8,6 +9,7 @@ const session = require('express-session');
 
 const userRouter = require('./routes/users');
 const roomRouter = require('./routes/rooms');
+const {client, mole_server_url, bid_server_url, num_server_url} = require('../url')
 
 const morgan = require('morgan');
 
@@ -20,19 +22,19 @@ app.use(cookieParser());
 // app.use(cors());
 
 app.use(
-  cors({
-    origin: ['http://localhost:3000', 'http://localhost:3009'],
-    methods: ['GET', 'POST', 'DELETE', 'PUT'],
-    credentials: true,
-  })
+	cors({
+		origin: [client, mole_server_url, bid_server_url, num_server_url],
+		methods: ['GET', 'POST', 'DELETE', 'PUT'],
+		credentials: true,
+	})
 );
 
 app.use(
-  session({
-    secret: '@codestates',
-    resave: false,
-    saveUninitialized: true,
-  })
+	session({
+		secret: '@codestates',
+		resave: false,
+		saveUninitialized: true,
+	})
 );
 
 app.use(morgan('dev'));
@@ -43,9 +45,9 @@ app.use('/rooms', roomRouter);
 
 app.set('port', port);
 app.listen(app.get('port'), () => {
-  console.log(`app is listening in PORT ${app.get('port')}`);
+	console.log(`app is listening in PORT ${app.get('port')}`);
 });
 
 app.get('/', (req, res) => {
-  res.status(200).send('Success');
+	res.status(200).send('Success');
 });
