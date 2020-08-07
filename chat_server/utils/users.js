@@ -3,6 +3,12 @@ const users = [];
 // Join user to chat
 function userJoin(socketId, userInfo, room) {
   const user = { id: socketId, userInfo, room };
+  const roomExists = users.find((user) => user.room.roomId === room.roomId);
+  if (roomExists) {
+    user.isHost = false;
+  } else {
+    user.isHost = true;
+  }
   users.push(user);
   return user;
 }
