@@ -71,7 +71,6 @@ module.exports = {
           room.isLocked = Boolean(getRooms[k].password);
           rooms.push(room);
         });
-        console.log(rooms);
         // res.status(200).json(moleRooms);  //변경 필요
         res.status(200).json(rooms);
       } catch (err) {
@@ -130,7 +129,6 @@ module.exports = {
         let roomId = req.body.roomId;
         let nickname = req.body.username;
         let gameCode = req.body.gameCode;
-        console.log(moleRooms[roomId], 'line 135 room id');
         if (gameCode === '1') {
           if (moleRooms[roomId].roomOwner === nickname) {
             delete moleRooms[roomId];
