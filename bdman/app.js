@@ -18,18 +18,31 @@ io.on('connection', (socket) => {
     const roomUsers = getRoomUsers(user.room);
 
     socket.join(user.room);
-    console.log(Object.keys(roomUsers).length);
-    console.log(roomUsers);
+    // console.log(Object.keys(roomUsers).length);
+    // console.log(roomUsers);
     if(Object.keys(roomUsers).length === 2){
       console.log('game start');
 
-      setTimeout(() => {
-        socket.emit('start', true);
-        socket.broadcast.to(user.room).emit('start',false);
-      }, 3000);
+      // setTimeout(() => {
+      //   socket.emit('start', true);
+      //   socket.broadcast.to(user.room).emit('start',false);
+      // }, 3000);
     }
     io.to(user.room).emit('loadUsers', roomUsers);
+
+    setTimeout(() => {
+      if(Object.keys(roomUsers).length !== 2){
+        io.to(user.room).emit('connectError');
+        console.log('disconnect');
+        socket.disconnect();
+      }
+    }, 3000)
   });
+  socket.on('sendEmoji', (data)=>{
+    let user = getCurrentUser(socket.id);
+    socket.broadcast.to(user.room).emit('getEmoji', data);
+  })
+
   socket.on('moveLeft', () => {
     let user = getCurrentUser(socket.id);
     socket.broadcast.to(user.room).emit('moveLeft');

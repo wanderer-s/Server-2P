@@ -38,14 +38,10 @@ function getRoomUsers(room) {
   return users.filter(user => user.room === room);
 }
 
-function endRoom(room){
-  delete users[room];
-}
 
 module.exports = {
   userJoin,
   getCurrentUser,
   userLeave,
   getRoomUsers,
-  endRoom
 };
