@@ -38,6 +38,10 @@ function getCurrentUser(id){
   return tmp;
 }
 
+function endGame(room){
+  delete rooms[room];
+}
+
 // Get room users
 function getRoomUsers(room) {
   return rooms[room];
@@ -48,4 +52,5 @@ module.exports = {
   userLeave,
   getRoomUsers,
   getCurrentUser,
+  endGame
 };
