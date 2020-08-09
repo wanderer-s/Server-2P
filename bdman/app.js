@@ -13,8 +13,8 @@ const {web_server_url} = require('../url')
 // Run when client connects
 io.on('connection', (socket) => {
   //방 입장시
-  socket.on('joinRoom', ({username, room}) => {
-    const user = userJoin(socket.id, username, room);
+  socket.on('joinRoom', ({username, room, avatarId}) => {
+    const user = userJoin(socket.id, username, room, avatarId);
     const roomUsers = getRoomUsers(user.room);
 
     socket.join(user.room);
