@@ -30,8 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Run when client connects
 io.on('connection', socket => {
-  socket.on('joinRoom', ({ username, room }) => {
-    const user = userJoin(socket.id, username, room);
+  socket.on('joinRoom', ({ username, room, avatarId }) => {
+    const user = userJoin(socket.id, username, room, avatarId);
   
     socket.join(user.room);
     console.log(getRoomUsers(user.room));
@@ -71,11 +71,14 @@ io.on('connection', socket => {
     }
 
     // Send users and room info
-    io.to(user.room).emit('roomUsers', {
-      room: user.room,
-      users: getRoomUsers(user.room)
-    });
-    console.log(getRoomUsers(user.room));
+    // io.to(user.room).emit('loadUsers', {
+    //   room: user.room,
+    //   users: getRoomUsers(user.room)
+    // });
+    // console.log(getRoomUsers(user.room));
+    const roomUsers = getRoomUsers(user.room);
+    io.to(user.room).emit('loadUsers', roomUsers);
+
   });
 
   socket.on('endTurn', () => {
