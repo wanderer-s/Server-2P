@@ -71,8 +71,9 @@ module.exports = {
 							from users
 							where userId = ? and password = ?`;
 					
-					let [login] = (await asyncdb.query(loginSql, [userId, password]))[0];
-					if(!login) {
+					let [login] = await asyncdb.query(loginSql, [userId, password]);
+
+					if(!login[0]) {
 						//loginSql 로 db 추출시에 값이 없는경우
 						//즉 회원가입을 하지 않았거나 Id 혹은 password가 틀린경우
 						throw 'loginErr'; //loginErr 로 throw
@@ -96,8 +97,8 @@ module.exports = {
 							select id, userId, nickname
 							from users
 							where userId = ? and socialId = ?`;
-					let [socialLogin] = (await asyncdb.query(loginSocialUser, [userId, socialId]))[0];
-					if(!socialLogin) {
+					let [socialLogin] = await asyncdb.query(loginSocialUser, [userId, socialId]);
+					if(!socialLogin[0]) {
 						//userId와 socialId로 select
 						//추출이 안되면 loginErr throw(socialId라 그런경우가 없겠지만 만일에 대비하여)
 						throw 'loginErr';
