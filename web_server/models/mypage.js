@@ -45,17 +45,18 @@ module.exports = {
 	},
 	put: async function (data) {
 		let { userId, avatarId } = await data;
-
-		return new Promise((resolve, reject) => {
-			let sql = `
-					update users
-					set avatarId = ?
-					where id = ?
-					`;
-			db.query(sql, [avatarId, userId], (error, result) => {
-				error ? reject(error) : resolve(result);
-			});
-		});
+		try {
+			let updateAvatarSql = `
+				update users
+				set avatarId = ?
+				where id = ?`;
+			let [updateAvatar] = await asyncdb.query(updateAvatarSql, [avatarId, userId]);
+			if(updateAvatar.affectedRows === 0) {
+				throw 'This user does not exist';
+			} return updateAvatar;
+		} catch (error) {
+			throw Error(error);
+		}
 	},
 	post: async function (data) {
 		let { score } = await data;
